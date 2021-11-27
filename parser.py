@@ -422,7 +422,7 @@ def equals(depth):
     #print(equals_indent + ":=")
     #print(indentation + "</assign>")
     out = out + indentation + "<assign>\n"
-    out = out + equals_indent + "assign\n"
+    out = out + equals_indent + ":=\n"
     out = out + indentation + "</assign>\n"
 
 def id(depth):
