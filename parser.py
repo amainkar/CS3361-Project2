@@ -224,7 +224,7 @@ def stmt(depth):
     out = out + indent + "<stmt>\n"
     if tok_list.token_list[tok_list.current_index][0] == "read":
         match("read",depth+2)
-        match("id", depth+2)
+        match("identifier", depth+2)
         pass
     elif tok_list.token_list[tok_list.current_index][0] == "write":
         match("write", depth+2)
@@ -401,7 +401,7 @@ def read(depth):
     #print(indentation + "</read>")
     out = out + indentation + "<read>\n"
     out = out + read_indent + "read\n"
-    out = indentation + "</read>\n"
+    out = out + indentation + "</read>\n"
 
 def write(depth):
     global out
