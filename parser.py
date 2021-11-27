@@ -1,3 +1,5 @@
+import sys
+
 class DFA_state:
     action = ""
     newState = 0
@@ -94,7 +96,8 @@ def scan_main(filename):
         token = scan(fp)
         list_tokens.append(token)
     if token == 'error':
-        print("error")
+        print("Error.")
+        sys.exit()
     fp.close()
     return list_tokens
 
@@ -171,6 +174,7 @@ class token_list:
 
 
 tok_list = token_list([])
+out = ""
 def main():                             # main function to drive code
     #code for main function
     inp = input("")
@@ -188,187 +192,305 @@ def main():                             # main function to drive code
 
 
 def program(depth):
-    print("<program>")
+    global out
+    #print("<program>")
+    out += "<program>\n"
     if(len(tok_list.token_list) == 0):
         stmt_list(depth + 2)
     elif(tok_list.token_list[tok_list.current_index][0] in ["read","write","identifier"]):
         stmt_list(depth + 2)
-    print("</program>")
+    out += "</program>\n"
+    #print("</program>")
     pass
 
 def stmt_list(depth):
+    global out
     indent = " " * depth
-    print(indent + "<stmt_list>")
+    #print(indent + "<stmt_list>")
+    out = out + indent + "<stmt_list>\n"
     if(tok_list.current_index>=len(tok_list.token_list)):
         pass
     elif(tok_list.token_list[tok_list.current_index][0] in ["read","write","identifier"]):
-        stmt(depth+2), stmt_list(depth+2)
-    print(indent + "</stmt_list>")
+        stmt(depth+2)
+        stmt_list(depth+2)
+    #print(indent + "</stmt_list>")
+    out = out + indent + "</stmt_list>\n"
     pass
 
 def stmt(depth):
+    global out
     indent = " " * depth
-    print(indent + "<stmt>")
+    #print(indent + "<stmt>")
+    out = out + indent + "<stmt>\n"
     if tok_list.token_list[tok_list.current_index][0] == "read":
-        read(depth+2)
-        tok_list.current_index += 1
-        id(depth+2)
-        tok_list.current_index += 1
+        match("read",depth+2)
+        match("id", depth+2)
         pass
     elif tok_list.token_list[tok_list.current_index][0] == "write":
-        write(depth+2)
-        tok_list.current_index += 1
+        match("write", depth+2)
         expr(depth+2)
         pass
     elif tok_list.token_list[tok_list.current_index][0] == "identifier":
-        id(depth+2)
-        tok_list.current_index += 1
-        equals(depth+2)
-        tok_list.current_index += 1
+        match("identifier", depth+2)
+        match("assign",depth+2)
         expr(depth+2)
         pass
     else:
-        print("err")
-    print(indent + "</stmt>")
+        print("Error.")
+        sys.exit()
+    #print(indent + "</stmt>")
+    out = out + indent + "</stmt>\n"
     pass
 
 def expr(depth):
+    global out
     indent = " " * depth
-    print(indent + "<expr>")
+    #print(indent + "<expr>")
+    out = out + indent + "<expr>\n"
     if(tok_list.token_list[tok_list.current_index][0] in ["identifier", "number", "lparen"]):
         term(depth+2)
         term_tail(depth+2)
     else:
-        print("err")
-    print(indent + "</expr>")
+        print("Error.")
+        sys.exit()
+    #print(indent + "</expr>")
+    out = out + indent + "</expr>\n"
     pass
 
 def term(depth):
+    global out
     indent = " " * depth
-    print(indent + "<term>")
+    #print(indent + "<term>")
+    out = out + indent + "<term>\n"
     if(tok_list.token_list[tok_list.current_index][0] in ["identifier", "number", "lparen"]):
         factor(depth+2)
         fact_tail(depth+2)
-    print(indent + "</term>")
+    #print(indent + "</term>")
+    out = out + indent + "</term>\n"
     pass
 
 def term_tail(depth):
+    global out
     indent = " " * depth
-    print(indent + "<term_tail>")
+    #print(indent + "<term_tail>")
+    out = out + indent + "<term_tail>\n"
     if (tok_list.current_index>=len(tok_list.token_list)):
         pass
     elif(tok_list.token_list[tok_list.current_index][0] in ["plus", "minus"]):
         add_op(depth+2)
-        tok_list.current_index += 1
         term(depth+2)
         term_tail(depth+2)
     elif(tok_list.token_list[tok_list.current_index][0] in ["identifier", "read", "write", "rparen"]):
         pass
     else:
-        print("err")
-    print(indent + "</term_tail>")
+        print("Error.")
+        sys.exit()
+    #print(indent + "</term_tail>")
+    out = out + indent + "</term_tail>\n"
     pass
 
 def factor(depth):
+    global out
     indent = " " * depth
-    print(indent + "<factor>")
+    #print(indent + "<factor>")
+    out = out + indent + "<factor>\n"
     if tok_list.token_list[tok_list.current_index][0] == "identifier":
-        id(depth+2)
-        tok_list.current_index += 1
+        match("identifier",depth+2)
         pass
     elif tok_list.token_list[tok_list.current_index][0] == "number":
-        number(depth+2)
-        tok_list.current_index += 1
+        match("number",depth+2)
         pass
     elif tok_list.token_list[tok_list.current_index][0] == "lparen":
-        lparen(depth+2)
-        tok_list.current_index += 1
+        match("lparen",depth+2)
         expr(depth+2)
-        rparen(depth+2)
-        tok_list.current_index += 1
-    print(indent + "</factor>")
+        match("rparen",depth+2)
+    #print(indent + "</factor>")
+    out = out + indent + "</factor>\n"
     pass
 
 def fact_tail(depth):
+    global out
     indent = " " * depth
-    print(indent + "<fact_tail>")
+    #print(indent + "<fact_tail>")
+    out = out + indent + "<fact_tail>\n"
     if (tok_list.current_index>=len(tok_list.token_list)):
         pass
     elif tok_list.token_list[tok_list.current_index][0] in ["div", "times"]:
         mult_op(depth+2)
-        tok_list.current_index += 1
         factor(depth+2)
         fact_tail(depth+2)
     elif tok_list.token_list[tok_list.current_index][0] in ["minus", "plus", "identifier", "read", "write","rparen"]:
         pass
     else:
-        print("err")
-    print(indent + "</fact_tail>")
+        print("Error.")
+        sys.exit()
+    #print(indent + "</fact_tail>")
+    out = out + indent + "</fact_tail>\n"
     pass
 
+def match(token, depth):
+    if tok_list.current_index>=len(tok_list.token_list):
+        print("error")
+        sys.exit()
+    if token == tok_list.token_list[tok_list.current_index][0]:
+        if token == "identifier":
+            id(depth)
+        elif token == "number":
+            number(depth)
+        elif token == "lparen":
+            lparen(depth)
+        elif token == "rparen":
+            rparen(depth)
+        elif token == "read":
+            read(depth)
+        elif token == "write":
+            write(depth)
+        elif token == "plus":
+            add(depth+2)
+        elif token == "minus":
+            sub(depth+2)
+        elif token == "div":
+            div(depth+2)
+        elif token == "times":
+            mult(depth+2)
+        elif token == "assign":
+            equals(depth)
+
+        tok_list.current_index += 1
+        pass
+    else:
+        print("error.")
+        sys.exit()
+
+
+
 def add_op(depth):
+    global out
     indentation = " " * depth
     add_op_indent = " " * (depth + 2)
-    print(indentation + "<add_op>")
-    print(add_op_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</add_op>")
+    #print(indentation + "<add_op>")
+    out = out + indentation + "<add_op>\n"
+    if tok_list.token_list[tok_list.current_index][0] == "minus":
+        match("minus", depth+2)
+    elif tok_list.token_list[tok_list.current_index][0] == "plus":
+        match("plus", depth+2)
+    #print(indentation + "</add_op>")
+    out = out + indentation + "</add_op>\n"
     pass
 
 def mult_op(depth):
+    global out
     indentation = " " * depth
     mult_op_indent = " " * (depth + 2)
-    print(indentation + "<mult_op>")
-    print(mult_op_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</mult_op>")
+    #print(indentation + "<mult_op>")
+    out = out + indentation + "<mult_op>\n"
+    if tok_list.token_list[tok_list.current_index][0] == "div":
+        match("div", depth+2)
+    elif tok_list.token_list[tok_list.current_index][0] == "times":
+        match("times", depth+2)
+    #print(indentation + "</mult_op>")
+    out = out + indentation + "</multi_op>\n"
     pass
 
 def read(depth):
+    global out
     indentation = " " * depth
     read_indent = " " * (depth + 2)
-    print(indentation + "<read>")
-    print(read_indent + "read")
-    print(indentation + "</read>")
+    #print(indentation + "<read>")
+    #print(read_indent + "read")
+    #print(indentation + "</read>")
+    out = out + indentation + "<read>\n"
+    out = out + read_indent + "read\n"
+    out = indentation + "</read>\n"
 
 def write(depth):
+    global out
     indentation = " " * depth
     read_indent = " " * (depth + 2)
-    print(indentation + "<write>")
-    print(read_indent + "write")
-    print(indentation + "</write>")
+    #print(indentation + "<write>")
+    #print(read_indent + "write")
+    #print(indentation + "</write>")
+    out = out + indentation + "<write>\n"
+    out = out + read_indent + "write\n"
+    out = out + indentation + "</write>\n"
 
 def equals(depth):
+    global out
     indentation = " " * depth
     equals_indent = " " * (depth + 2)
-    print(indentation + "<assign>")
-    print(equals_indent + ":=")
-    print(indentation + "</assign>")
+    #print(indentation + "<assign>")
+    #print(equals_indent + ":=")
+    #print(indentation + "</assign>")
+    out = out + indentation + "<assign>\n"
+    out = out + equals_indent + "assign\n"
+    out = out + indentation + "</assign>\n"
 
 def id(depth):
+    global out
     indentation = " " * depth
     id_indent = " " * (depth + 2)
-    print(indentation + "<id>")
-    print(id_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</id>")
+    #print(indentation + "<id>")
+    #print(id_indent + tok_list.token_list[tok_list.current_index][1])
+    #print(indentation + "</id>")
+    out = out +(indentation + "<id>\n")
+    out = out +(id_indent + tok_list.token_list[tok_list.current_index][1]+"\n")
+    out = out +(indentation + "</id>\n")
 
 def number(depth):
+    global out
     indentation = " " * depth
     number_indent = " " * (depth + 2)
-    print(indentation + "<number>")
-    print(number_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</number>")
+    #print(indentation + "<number>")
+    #print(number_indent + tok_list.token_list[tok_list.current_index][1])
+    #print(indentation + "</number>")
+    out = out +(indentation + "<number>\n")
+    out = out +(number_indent + tok_list.token_list[tok_list.current_index][1] + "\n")
+    out = out +(indentation + "</number>\n")
 
 def lparen(depth):
+    global out
     indentation = " " * depth
     lparen_indent = " " * (depth + 2)
-    print(indentation + "<lparen>")
-    print(lparen_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</lparen>")
+    #print(indentation + "<lparen>")
+    #print(lparen_indent + tok_list.token_list[tok_list.current_index][1])
+    #print(indentation + "</lparen>")
+    out = out +(indentation + "<lparen>\n")
+    out = out +(lparen_indent + tok_list.token_list[tok_list.current_index][1]+"\n")
+    out = out +(indentation + "</lparen>\n")
 
 def rparen(depth):
+    global out
     indentation = " " * depth
     rparen_indent = " " * (depth + 2)
-    print(indentation + "<rparen>")
-    print(rparen_indent + tok_list.token_list[tok_list.current_index][1])
-    print(indentation + "</rparen>")
+    #print(indentation + "<rparen>")
+    #print(rparen_indent + tok_list.token_list[tok_list.current_index][1])
+    #print(indentation + "</rparen>")
+    out = out +(indentation + "<rparen>\n")
+    out = out +(rparen_indent + tok_list.token_list[tok_list.current_index][1]+"\n")
+    out = out +(indentation + "</rparen>\n")
 
+def div(depth):
+    global out
+    indentation = " " * depth
+    out = out +(indentation + tok_list.token_list[tok_list.current_index][1] + "\n")
+    pass
+
+def mult(depth):
+    global out
+    indentation = " " * depth
+    out = out +(indentation + tok_list.token_list[tok_list.current_index][1] + "\n")
+    pass
+
+def add(depth):
+    global out
+    indentation = " " * depth
+    out = out +(indentation + tok_list.token_list[tok_list.current_index][1] + '\n')
+    pass
+
+def sub(depth):
+    global out
+    indentation = " " * depth
+    out = out +(indentation + tok_list.token_list[tok_list.current_index][1] + "\n")
+    pass
 main()
+print(out)
