@@ -121,6 +121,10 @@ def scan(fp):
             if cur_char == "":
                 EOF = True
                 prev_state = cur_state
+                if image.lower() == 'read':
+                    return ["read","read"]
+                if image.lower() == 'write':
+                    return ["write","write"]
                 return [tokenTable[prev_state],image]
             action = transitionTable[cur_state][charState(cur_char)].action
             if action == "move":
