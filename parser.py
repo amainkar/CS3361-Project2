@@ -492,5 +492,6 @@ def sub(depth):
     indentation = " " * depth
     out = out +(indentation + tok_list.token_list[tok_list.current_index][1] + "\n")
     pass
+
 main()
 print(out)
