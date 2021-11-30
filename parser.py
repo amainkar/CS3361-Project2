@@ -1,3 +1,4 @@
+#Team members: Atharva Mainkar, Harshit Bhargava, Manav Singhai
 import sys
 
 class DFA_state:
