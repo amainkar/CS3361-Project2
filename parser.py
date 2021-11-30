@@ -199,12 +199,12 @@ def main():                             # main function to drive code
 def program(depth):
     global out
     #print("<program>")
-    out += "<program>\n"
+    out += "<Program>\n"
     if(len(tok_list.token_list) == 0):
         stmt_list(depth + 2)
     elif(tok_list.token_list[tok_list.current_index][0] in ["read","write","identifier"]):
         stmt_list(depth + 2)
-    out += "</program>\n"
+    out += "</Program>\n"
     #print("</program>")
     pass
 
